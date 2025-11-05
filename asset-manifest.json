@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.css": "/dashboard-builder/static/css/main.0bbc9690.css",
+    "main.js": "/dashboard-builder/static/js/main.63bc0aca.js",
+    "static/js/453.8fdd8dc6.chunk.js": "/dashboard-builder/static/js/453.8fdd8dc6.chunk.js",
+    "static/media/logo-extract.svg": "/dashboard-builder/static/media/logo-extract.7bde8325efed0d54e62dab4a4c642d09.svg",
+    "static/media/icon-graph-donut-chart.svg": "/dashboard-builder/static/media/icon-graph-donut-chart.bbf0e2757d68376b5dbd2db5b05aeeb9.svg",
+    "static/media/icon-graph-multiple-kpi.svg": "/dashboard-builder/static/media/icon-graph-multiple-kpi.aed14f6e7123c7f34dff7aa166e620e2.svg",
+    "static/media/icon-graph-pie-chart.svg": "/dashboard-builder/static/media/icon-graph-pie-chart.5f0123f223d65616b17a0d079b72d1b9.svg",
+    "static/media/icon-graph-gauge.svg": "/dashboard-builder/static/media/icon-graph-gauge.f4b413c3225810d4cae1997c002c62f4.svg",
+    "static/media/icon-graph-area-chart.svg": "/dashboard-builder/static/media/icon-graph-area-chart.a1581c0832d28eb600c6077776283420.svg",
+    "static/media/icon-graph-kpi.svg": "/dashboard-builder/static/media/icon-graph-kpi.655d174d3556cc4317f91e3208ca3d8e.svg",
+    "static/media/logo-mark-extract.svg": "/dashboard-builder/static/media/logo-mark-extract.7998d8db500c37ee37e3f706a58ff6f5.svg",
+    "static/media/icon-graph-bar-chart.svg": "/dashboard-builder/static/media/icon-graph-bar-chart.bb85c46a9336a5e50819c307023a99ac.svg",
+    "static/media/icon-graph-heat-map.svg": "/dashboard-builder/static/media/icon-graph-heat-map.5b1964a43fba1a9e8677f7685fd48743.svg",
+    "static/media/icon-graph-line-chart.svg": "/dashboard-builder/static/media/icon-graph-line-chart.4fcec912e500dc2dd39105886bbcc1c4.svg",
+    "index.html": "/dashboard-builder/index.html",
+    "static/media/icon-graph-dataTable.svg": "/dashboard-builder/static/media/icon-graph-dataTable.e1fe38ff26d3ecf51c02d7e3b50fe40c.svg",
+    "main.0bbc9690.css.map": "/dashboard-builder/static/css/main.0bbc9690.css.map",
+    "main.63bc0aca.js.map": "/dashboard-builder/static/js/main.63bc0aca.js.map",
+    "453.8fdd8dc6.chunk.js.map": "/dashboard-builder/static/js/453.8fdd8dc6.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0bbc9690.css",
+    "static/js/main.63bc0aca.js"
+  ]
+}
