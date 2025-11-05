@@ -2,7 +2,7 @@
   "name": "dashboard-builder",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://brandongrant.github.io/dashboard-builder",
+  "homepage": "https://bgcss.github.io/dashboard-builder",
   "dependencies": {
     "@tanstack/react-table": "^8.21.3",
     "@testing-library/dom": "^10.4.1",
