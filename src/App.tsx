@@ -28,6 +28,7 @@ interface Block {
   dataType?: string;
   graphType?: string;
   title?: string;
+  customTitle?: string;
   value?: string;
   configured: boolean;
   kpiCount?: number;
@@ -48,6 +49,7 @@ const OCRDashboardBuilderV2 = () => {
   const [editingBlock, setEditingBlock] = useState<{rowId: number, blockIndex: number} | null>(null);
   const [selectedDataType, setSelectedDataType] = useState('');
   const [selectedGraphType, setSelectedGraphType] = useState('');
+  const [customTitle, setCustomTitle] = useState('');
   const [kpiBlockCount, setKpiBlockCount] = useState(4);
   const [draggedRow, setDraggedRow] = useState<DashboardRow | null>(null);
   const [draggedBlock, setDraggedBlock] = useState<{block: Block, rowId: number, blockIndex: number} | null>(null);
@@ -68,42 +70,42 @@ const OCRDashboardBuilderV2 = () => {
     { 
       value: 'document_classification', 
       label: 'Document Classification',
-      availableGraphs: ['pie', 'donut', 'bar', 'table']
+      availableGraphs: ['pie', 'donut', 'bar', 'table', 'polarArea', 'radar']
     },
     { 
       value: 'documents_by_month', 
       label: 'Documents by Month',
-      availableGraphs: ['line', 'bar', 'area']
+      availableGraphs: ['line', 'bar', 'area', 'scatter']
     },
     { 
       value: 'documents_pending', 
       label: 'Documents Pending',
-      availableGraphs: ['kpi', 'bar', 'line']
+      availableGraphs: ['kpi', 'bar', 'line', 'bubble']
     },
     { 
       value: 'documents_processed', 
       label: 'Documents Processed',
-      availableGraphs: ['kpi', 'bar', 'line']
+      availableGraphs: ['kpi', 'bar', 'line', 'bubble']
     },
     { 
       value: 'document_types', 
       label: 'Document Types Distribution',
-      availableGraphs: ['pie', 'donut', 'bar']
+      availableGraphs: ['pie', 'donut', 'bar', 'polarArea']
     },
     { 
       value: 'error_rate', 
       label: 'Error Rate',
-      availableGraphs: ['kpi', 'line', 'gauge']
+      availableGraphs: ['kpi', 'line', 'gauge', 'scatter']
     },
     { 
       value: 'extraction_accuracy', 
       label: 'Extraction Accuracy',
-      availableGraphs: ['kpi', 'gauge', 'line']
+      availableGraphs: ['kpi', 'gauge', 'line', 'radar']
     },
     { 
       value: 'field_extraction', 
       label: 'Field Extraction Success',
-      availableGraphs: ['bar', 'donut', 'table']
+      availableGraphs: ['bar', 'donut', 'table', 'radar']
     },
     { 
       value: 'kpi_block', 
@@ -114,17 +116,17 @@ const OCRDashboardBuilderV2 = () => {
     { 
       value: 'processing_time', 
       label: 'Processing Time',
-      availableGraphs: ['kpi', 'line', 'bar', 'area']
+      availableGraphs: ['kpi', 'line', 'bar', 'area', 'scatter']
     },
     { 
       value: 'tokens_usage', 
       label: 'Tokens Usage Over Time',
-      availableGraphs: ['line', 'bar', 'area']
+      availableGraphs: ['line', 'bar', 'area', 'bubble']
     },
     { 
       value: 'user_activity', 
       label: 'User Activity',
-      availableGraphs: ['line', 'bar', 'heatmap']
+      availableGraphs: ['line', 'bar', 'heatmap', 'bubble', 'scatter']
     }
   ].sort((a, b) => a.label.localeCompare(b.label));
 
@@ -139,6 +141,10 @@ const OCRDashboardBuilderV2 = () => {
     area: { label: 'Area Chart', icon: <img src={areaChartIcon} alt="Area Chart" className="w-5 h-5 mx-auto" />  },
     table: { label: 'Data Table', icon: <img src={dataTableIcon} alt="Data Table" className="w-5 h-5 mx-auto" /> },
     heatmap: { label: 'Heatmap', icon: <img src={heatMapIcon} alt="Heatmap" className="w-5 h-5 mx-auto" /> },
+    scatter: { label: 'Scatter Plot', icon: <BarChart3 size={20} className="w-5 h-5 mx-auto" /> },
+    bubble: { label: 'Bubble Chart', icon: <BarChart3 size={20} className="w-5 h-5 mx-auto" /> },
+    polarArea: { label: 'Polar Area', icon: <img src={pieChartIcon} alt="Polar Area" className="w-5 h-5 mx-auto" /> },
+    radar: { label: 'Radar Chart', icon: <BarChart3 size={20} className="w-5 h-5 mx-auto" /> },
   };
 
   const kpiBlockMetrics = [
@@ -231,10 +237,12 @@ const OCRDashboardBuilderV2 = () => {
     if (block.configured) {
       setSelectedDataType(block.dataType);
       setSelectedGraphType(block.graphType);
+      setCustomTitle(block.customTitle || '');
       setKpiBlockCount(block.kpiCount || 4);
     } else {
       setSelectedDataType('');
       setSelectedGraphType('');
+      setCustomTitle('');
       setKpiBlockCount(4);
     }
   };
@@ -243,6 +251,7 @@ const OCRDashboardBuilderV2 = () => {
     setEditingBlock(null);
     setSelectedDataType('');
     setSelectedGraphType('');
+    setCustomTitle('');
     setKpiBlockCount(4);
   };
 
@@ -250,6 +259,7 @@ const OCRDashboardBuilderV2 = () => {
     if (!editingBlock || !selectedDataType || !selectedGraphType) return;
 
     const dataTypeLabel = dataTypeOptions.find(dt => dt.value === selectedDataType)?.label;
+    const finalTitle = customTitle.trim() || dataTypeLabel;
     
     setDashboardRows(dashboardRows.map(row => {
       if (row.id === editingBlock.rowId) {
@@ -260,7 +270,8 @@ const OCRDashboardBuilderV2 = () => {
           ...existingBlock,
           dataType: selectedDataType,
           graphType: selectedGraphType,
-          title: dataTypeLabel,
+          title: finalTitle,
+          customTitle: customTitle.trim(),
           configured: true,
           ...(selectedGraphType === 'kpi_block' && { kpiCount: kpiBlockCount })
         };
@@ -362,6 +373,8 @@ const OCRDashboardBuilderV2 = () => {
   };
 
   const renderBlockConfiguration = () => {
+    const dataTypeLabel = dataTypeOptions.find(dt => dt.value === selectedDataType)?.label;
+    
     return (
       <div className="flex flex-col h-full">
         <div className="flex-1 space-y-4 overflow-y-auto">
@@ -379,6 +392,10 @@ const OCRDashboardBuilderV2 = () => {
                   setSelectedGraphType('kpi_block');
                 } else {
                   setSelectedGraphType('');
+                }
+                // Reset custom title when data type changes
+                if (!customTitle) {
+                  setCustomTitle('');
                 }
               }}
               className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -435,6 +452,25 @@ const OCRDashboardBuilderV2 = () => {
                 <option value={2}>2 Metrics</option>
                 <option value={4}>4 Metrics</option>
               </select>
+            </div>
+          )}
+
+          {/* Step 3: Custom Title */}
+          {(selectedDataType && selectedGraphType) && (
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                3. Block Title (Optional)
+              </label>
+              <input
+                type="text"
+                value={customTitle}
+                onChange={(e) => setCustomTitle(e.target.value)}
+                placeholder={dataTypeLabel || 'Enter custom title...'}
+                className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <div className="text-xs text-gray-500 mt-1">
+                Leave empty to use default: "{dataTypeLabel}"
+              </div>
             </div>
           )}
         </div>
@@ -569,6 +605,19 @@ const OCRDashboardBuilderV2 = () => {
             <DataTableComponent />
           </div>
         );
+      case 'scatter':
+      case 'bubble':
+      case 'polarArea':
+      case 'radar':
+        return (
+          <div className="flex items-center justify-center h-full text-gray-400">
+            <div className="text-center">
+              <BarChart3 size={48} className="mx-auto mb-2" />
+              <div className="text-sm">{graphTypeOptions[block.graphType].label}</div>
+              <div className="text-xs mt-1">Chart Preview</div>
+            </div>
+          </div>
+        );
       default:
         return (
           <div className="flex items-center justify-center h-full text-gray-400">
@@ -593,7 +642,7 @@ const OCRDashboardBuilderV2 = () => {
       "dashboardPreviewData",
       JSON.stringify(dashboardRows)
     );
-    window.open("/preview", "_blank");
+    window.open("preview", "_blank");
   };
 
   return (
