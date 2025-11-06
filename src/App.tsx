@@ -31,6 +31,11 @@ interface Block {
   value?: string;
   configured: boolean;
   kpiCount?: number;
+  kpiValue?: string;
+  kpiChange?: {
+    value: string;
+    positive: boolean;
+  };
 }
 
 interface DashboardRow {
@@ -58,13 +63,22 @@ const OCRDashboardBuilderV2 = () => {
     }
   ]);
 
-  // Data type to graph type mapping
+  // Data type to graph type mapping - sorted alphabetically
   const dataTypeOptions = [
     { 
-      value: 'kpi_block', 
-      label: 'KPI Block (Multiple Metrics)',
-      availableGraphs: ['kpi_block'],
-      requiresConfig: true
+      value: 'document_classification', 
+      label: 'Document Classification',
+      availableGraphs: ['pie', 'donut', 'bar', 'table']
+    },
+    { 
+      value: 'documents_by_month', 
+      label: 'Documents by Month',
+      availableGraphs: ['line', 'bar', 'area']
+    },
+    { 
+      value: 'documents_pending', 
+      label: 'Documents Pending',
+      availableGraphs: ['kpi', 'bar', 'line']
     },
     { 
       value: 'documents_processed', 
@@ -72,19 +86,9 @@ const OCRDashboardBuilderV2 = () => {
       availableGraphs: ['kpi', 'bar', 'line']
     },
     { 
-      value: 'extraction_accuracy', 
-      label: 'Extraction Accuracy',
-      availableGraphs: ['kpi', 'gauge', 'line']
-    },
-    { 
       value: 'document_types', 
       label: 'Document Types Distribution',
       availableGraphs: ['pie', 'donut', 'bar']
-    },
-    { 
-      value: 'processing_time', 
-      label: 'Processing Time',
-      availableGraphs: ['line', 'bar', 'area']
     },
     { 
       value: 'error_rate', 
@@ -92,16 +96,37 @@ const OCRDashboardBuilderV2 = () => {
       availableGraphs: ['kpi', 'line', 'gauge']
     },
     { 
+      value: 'extraction_accuracy', 
+      label: 'Extraction Accuracy',
+      availableGraphs: ['kpi', 'gauge', 'line']
+    },
+    { 
       value: 'field_extraction', 
       label: 'Field Extraction Success',
       availableGraphs: ['bar', 'donut', 'table']
+    },
+    { 
+      value: 'kpi_block', 
+      label: 'KPI Block (Multiple Metrics)',
+      availableGraphs: ['kpi_block'],
+      requiresConfig: true
+    },
+    { 
+      value: 'processing_time', 
+      label: 'Processing Time',
+      availableGraphs: ['kpi', 'line', 'bar', 'area']
+    },
+    { 
+      value: 'tokens_usage', 
+      label: 'Tokens Usage Over Time',
+      availableGraphs: ['line', 'bar', 'area']
     },
     { 
       value: 'user_activity', 
       label: 'User Activity',
       availableGraphs: ['line', 'bar', 'heatmap']
     }
-  ];
+  ].sort((a, b) => a.label.localeCompare(b.label));
 
   const graphTypeOptions: {[key: string]: {label: string, icon: string | React.ReactElement}} = {
     kpi_block: { label: 'KPI Block', icon: <img src={multipleKpiIcon} alt="KPI Block" className="w-5 h-5 mx-auto" /> },
@@ -124,6 +149,38 @@ const OCRDashboardBuilderV2 = () => {
     { label: 'Active Users', value: '47', change: '+5', positive: true },
     { label: 'Queue Length', value: '23', change: '-8', positive: true },
   ];
+
+  // Helper function to generate random KPI values based on data type
+  const generateRandomKpiValue = (dataType: string) => {
+    switch (dataType) {
+      case 'documents_processed':
+        return Math.floor(Math.random() * 5000) + 1000; // 1000-6000
+      case 'documents_pending':
+        return Math.floor(Math.random() * 100) + 10; // 10-110
+      case 'extraction_accuracy':
+        return (Math.random() * 10 + 90).toFixed(1) + '%'; // 90.0%-100.0%
+      case 'error_rate':
+        return (Math.random() * 5).toFixed(1) + '%'; // 0.0%-5.0%
+      case 'processing_time':
+        return (Math.random() * 3 + 0.5).toFixed(1) + 's'; // 0.5s-3.5s
+      case 'document_classification':
+        return Math.floor(Math.random() * 1000) + 500; // 500-1500
+      case 'tokens_usage':
+        return Math.floor(Math.random() * 50000) + 10000; // 10000-60000
+      default:
+        return Math.floor(Math.random() * 5000) + 1000; // Default range
+    }
+  };
+
+  // Helper function to generate random change values
+  const generateRandomChange = () => {
+    const isPositive = Math.random() > 0.5;
+    const changeValue = (Math.random() * 20 + 1).toFixed(1);
+    return {
+      value: `${isPositive ? '+' : '-'}${changeValue}%`,
+      positive: isPositive
+    };
+  };
 
   const getAvailableGraphs = () => {
     const dataType = dataTypeOptions.find(dt => dt.value === selectedDataType);
@@ -197,14 +254,25 @@ const OCRDashboardBuilderV2 = () => {
     setDashboardRows(dashboardRows.map(row => {
       if (row.id === editingBlock.rowId) {
         const newBlocks = [...row.blocks];
-        newBlocks[editingBlock.blockIndex] = {
-          ...newBlocks[editingBlock.blockIndex],
+        const existingBlock = newBlocks[editingBlock.blockIndex];
+        
+        const blockData = {
+          ...existingBlock,
           dataType: selectedDataType,
           graphType: selectedGraphType,
           title: dataTypeLabel,
           configured: true,
           ...(selectedGraphType === 'kpi_block' && { kpiCount: kpiBlockCount })
         };
+
+        // Generate and store KPI values only for single KPI blocks and only if not already set
+        // This ensures values are generated once and remain stable
+        if (selectedGraphType === 'kpi' && !existingBlock.kpiValue) {
+          blockData.kpiValue = generateRandomKpiValue(selectedDataType).toString();
+          blockData.kpiChange = generateRandomChange();
+        }
+
+        newBlocks[editingBlock.blockIndex] = blockData;
         return { ...row, blocks: newBlocks };
       }
       return row;
@@ -331,22 +399,20 @@ const OCRDashboardBuilderV2 = () => {
                 2. Select Visualization
               </label>
               {selectedDataType ? (
-                <div className="grid grid-cols-2 gap-2">
-                  {getAvailableGraphs().map(graphType => (
-                    <button
-                      key={graphType}
-                      onClick={() => setSelectedGraphType(graphType)}
-                      className={`p-2 border-2 rounded-lg text-center transition-all ${
-                        selectedGraphType === graphType 
-                          ? 'border-accent-400 bg-accent-50' 
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="text-xl mb-0.5">{graphTypeOptions[graphType].icon}</div>
-                      <div className="text-xs text-gray-700 leading-tight">{graphTypeOptions[graphType].label}</div>
-                    </button>
-                  ))}
-                </div>
+                <select 
+                  value={selectedGraphType}
+                  onChange={(e) => setSelectedGraphType(e.target.value)}
+                  className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Choose visualization...</option>
+                  {getAvailableGraphs()
+                    .sort((a, b) => graphTypeOptions[a].label.localeCompare(graphTypeOptions[b].label))
+                    .map(graphType => (
+                      <option key={graphType} value={graphType}>
+                        {graphTypeOptions[graphType].label}
+                      </option>
+                    ))}
+                </select>
               ) : (
                 <div className="text-xs text-gray-500 italic border border-dashed border-gray-300 rounded-lg p-3 text-center">
                   Select a data type first
@@ -436,12 +502,23 @@ const OCRDashboardBuilderV2 = () => {
 
     switch (block.graphType) {
       case 'kpi':
+        // Only use stored values - never generate new ones during render
+        if (!block.kpiValue || !block.kpiChange) {
+          return (
+            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+              <div className="text-sm">Loading KPI data...</div>
+            </div>
+          );
+        }
+
         return (
           <div className="flex flex-col items-start justify-center h-full">
             <div className="text-4xl font-bold text-black mb-2">
-              {block.value || '2,847'}
+              {block.kpiValue}
             </div>
-            <div className="text-sm text-gray-500">+12% from last month</div>
+            <div className={`text-sm ${block.kpiChange.positive ? 'text-green-600' : 'text-red-600'}`}>
+              {block.kpiChange.value} from last month
+            </div>
           </div>
         );
       case 'donut':
@@ -516,7 +593,7 @@ const OCRDashboardBuilderV2 = () => {
       "dashboardPreviewData",
       JSON.stringify(dashboardRows)
     );
-    navigate("/preview");
+    window.open("/preview", "_blank");
   };
 
   return (

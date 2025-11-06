@@ -9,6 +9,11 @@ interface Block {
   value?: string;
   configured: boolean;
   kpiCount?: number;
+  kpiValue?: string;
+  kpiChange?: {
+    value: string;
+    positive: boolean;
+  };
 }
 
 interface DashboardRow {

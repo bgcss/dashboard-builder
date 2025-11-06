@@ -20,6 +20,11 @@ interface Block {
   value?: string;
   configured: boolean;
   kpiCount?: number;
+  kpiValue?: string;
+  kpiChange?: {
+    value: string;
+    positive: boolean;
+  };
 }
 
 interface DashboardRow {
@@ -41,6 +46,38 @@ const DashboardPreview: React.FC<DashboardPreviewProps> = ({ dashboardRows }) =>
     { label: 'Active Users', value: '47', change: '+5', positive: true },
     { label: 'Queue Length', value: '23', change: '-8', positive: true },
   ];
+
+  // Helper function to generate fallback random KPI values based on data type
+  const generateFallbackKpiValue = (dataType: string) => {
+    switch (dataType) {
+      case 'documents_processed':
+        return Math.floor(Math.random() * 5000) + 1000; // 1000-6000
+      case 'documents_pending':
+        return Math.floor(Math.random() * 100) + 10; // 10-110
+      case 'extraction_accuracy':
+        return (Math.random() * 10 + 90).toFixed(1) + '%'; // 90.0%-100.0%
+      case 'error_rate':
+        return (Math.random() * 5).toFixed(1) + '%'; // 0.0%-5.0%
+      case 'processing_time':
+        return (Math.random() * 3 + 0.5).toFixed(1) + 's'; // 0.5s-3.5s
+      case 'document_classification':
+        return Math.floor(Math.random() * 1000) + 500; // 500-1500
+      case 'tokens_usage':
+        return Math.floor(Math.random() * 50000) + 10000; // 10000-60000
+      default:
+        return Math.floor(Math.random() * 5000) + 1000; // Default range
+    }
+  };
+
+  // Helper function to generate fallback random change values
+  const generateFallbackChange = () => {
+    const isPositive = Math.random() > 0.5;
+    const changeValue = (Math.random() * 20 + 1).toFixed(1);
+    return {
+      value: `${isPositive ? '+' : '-'}${changeValue}%`,
+      positive: isPositive
+    };
+  };
 
   const renderBlockContent = (block: any) => {
     if (!block.configured) {
@@ -77,12 +114,18 @@ const DashboardPreview: React.FC<DashboardPreviewProps> = ({ dashboardRows }) =>
 
     switch (block.graphType) {
       case 'kpi':
+        // Use stored values if available, otherwise use block.value, otherwise generate fallback
+        const kpiValue = block.kpiValue || block.value || generateFallbackKpiValue(block.dataType || '').toString();
+        const kpiChange = block.kpiChange || generateFallbackChange();
+
         return (
           <div className="flex flex-col items-start justify-center h-full">
             <div className="text-4xl font-bold text-black mb-2">
-              {block.value || '2,847'}
+              {kpiValue}
             </div>
-            <div className="text-sm text-gray-500">+12% from last month</div>
+            <div className={`text-sm ${kpiChange.positive ? 'text-green-600' : 'text-red-600'}`}>
+              {kpiChange.value} from last month
+            </div>
           </div>
         );
       case 'donut':
