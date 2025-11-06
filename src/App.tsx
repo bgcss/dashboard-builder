@@ -522,7 +522,7 @@ const OCRDashboardBuilderV2 = () => {
                 // Store dashboard data in localStorage for the preview
                 localStorage.setItem('dashboardPreviewData', JSON.stringify(dashboardRows));
                 // Open preview in new tab
-                window.open('/preview', '_blank');
+                window.open('preview', '_blank');
               }}
               className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
             >
