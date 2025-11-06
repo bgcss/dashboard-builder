@@ -11,6 +11,7 @@ import multipleKpiIcon from './images/icon-graph-multiple-kpi.svg';
 import pieChartIcon from './images/icon-graph-pie-chart.svg';
 import heatMapIcon from './images/icon-graph-heat-map.svg';
 import dataTableIcon from './images/icon-graph-dataTable.svg';
+import { useHref } from "react-router-dom";
 import {
   BarChartComponent,
   LineChartComponent,
@@ -397,6 +398,7 @@ const OCRDashboardBuilderV2 = () => {
       </div>
     );
   };
+  
 
   const renderBlockContent = (block: any) => {
     if (!block.configured) {
@@ -507,6 +509,8 @@ const OCRDashboardBuilderV2 = () => {
     sum + row.blocks.filter(b => b.configured).length, 0
   );
 
+  const previewHref = useHref("/preview");
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -517,12 +521,13 @@ const OCRDashboardBuilderV2 = () => {
             <h1 className="text-xl font-bold text-gray-900">Customize your dashboard</h1>
           </div>
           <div className="flex gap-3">
-            <button 
+            <button
               onClick={() => {
-                // Store dashboard data in localStorage for the preview
-                localStorage.setItem('dashboardPreviewData', JSON.stringify(dashboardRows));
-                // Open preview in new tab
-                window.open('preview', '_blank');
+                localStorage.setItem(
+                  "dashboardPreviewData",
+                  JSON.stringify(dashboardRows)
+                );
+                window.open(previewHref, "_blank", "noopener,noreferrer");
               }}
               className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
             >
