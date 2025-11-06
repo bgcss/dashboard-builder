@@ -9,9 +9,14 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+// ✅ Only use PUBLIC_URL when in production (e.g., GitHub Pages)
+const basename =
+  process.env.NODE_ENV === 'production' ? process.env.PUBLIC_URL : undefined;
+
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/preview" element={<PreviewPage />} />
@@ -20,7 +25,5 @@ root.render(
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
