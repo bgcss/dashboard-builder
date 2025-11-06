@@ -11,7 +11,7 @@ import multipleKpiIcon from './images/icon-graph-multiple-kpi.svg';
 import pieChartIcon from './images/icon-graph-pie-chart.svg';
 import heatMapIcon from './images/icon-graph-heat-map.svg';
 import dataTableIcon from './images/icon-graph-dataTable.svg';
-import { useHref } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   BarChartComponent,
   LineChartComponent,
@@ -509,7 +509,15 @@ const OCRDashboardBuilderV2 = () => {
     sum + row.blocks.filter(b => b.configured).length, 0
   );
 
-  const previewHref = useHref("/preview");
+  const navigate = useNavigate();
+
+  const handlePreviewClick = () => {
+    localStorage.setItem(
+      "dashboardPreviewData",
+      JSON.stringify(dashboardRows)
+    );
+    navigate("/preview");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -522,13 +530,7 @@ const OCRDashboardBuilderV2 = () => {
           </div>
           <div className="flex gap-3">
             <button
-              onClick={() => {
-                localStorage.setItem(
-                  "dashboardPreviewData",
-                  JSON.stringify(dashboardRows)
-                );
-                window.open(previewHref, "_blank", "noopener,noreferrer");
-              }}
+              onClick={handlePreviewClick}
               className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
             >
               <Eye size={18} />
