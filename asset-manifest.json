@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/dashboard-builder/static/css/main.0bbc9690.css",
-    "main.js": "/dashboard-builder/static/js/main.63bc0aca.js",
+    "main.js": "/dashboard-builder/static/js/main.ce6f17d5.js",
     "static/js/453.8fdd8dc6.chunk.js": "/dashboard-builder/static/js/453.8fdd8dc6.chunk.js",
     "static/media/logo-extract.svg": "/dashboard-builder/static/media/logo-extract.7bde8325efed0d54e62dab4a4c642d09.svg",
     "static/media/icon-graph-donut-chart.svg": "/dashboard-builder/static/media/icon-graph-donut-chart.bbf0e2757d68376b5dbd2db5b05aeeb9.svg",
@@ -17,11 +17,11 @@
     "index.html": "/dashboard-builder/index.html",
     "static/media/icon-graph-dataTable.svg": "/dashboard-builder/static/media/icon-graph-dataTable.e1fe38ff26d3ecf51c02d7e3b50fe40c.svg",
     "main.0bbc9690.css.map": "/dashboard-builder/static/css/main.0bbc9690.css.map",
-    "main.63bc0aca.js.map": "/dashboard-builder/static/js/main.63bc0aca.js.map",
+    "main.ce6f17d5.js.map": "/dashboard-builder/static/js/main.ce6f17d5.js.map",
     "453.8fdd8dc6.chunk.js.map": "/dashboard-builder/static/js/453.8fdd8dc6.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.0bbc9690.css",
-    "static/js/main.63bc0aca.js"
+    "static/js/main.ce6f17d5.js"
   ]
 }
