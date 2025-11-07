@@ -20,8 +20,14 @@ import {
   AreaChartComponent,
   GaugeChartComponent,
   HeatmapComponent,
-  DataTableComponent
+  DataTableComponent,
+  PolarChartComponent,
+  BubbleChartComponent,
+  ScatterChartComponent,
+  RadarChartComponent
 } from './ChartComponents';
+import { Input } from './components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/ui/select';
 
 interface Block {
   id: number;
@@ -377,36 +383,41 @@ const OCRDashboardBuilderV2 = () => {
     
     return (
       <div className="flex flex-col h-full">
-        <div className="flex-1 space-y-4 overflow-y-auto">
+        <div className="flex-1 space-y-4 overflow-y-auto px-1">
           {/* Step 1: Select Data Type */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1.5">
               1. Select Data Type
             </label>
-            <select 
-              value={selectedDataType}
-              onChange={(e) => {
-                setSelectedDataType(e.target.value);
-                // Auto-select KPI Block visualization for KPI Block (Multiple Metrics)
-                if (e.target.value === 'kpi_block') {
-                  setSelectedGraphType('kpi_block');
-                } else {
-                  setSelectedGraphType('');
-                }
-                // Reset custom title when data type changes
-                if (!customTitle) {
-                  setCustomTitle('');
-                }
-              }}
-              className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">Choose data type...</option>
-              {dataTypeOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <div className="px-0.5">
+              <Select 
+                value={selectedDataType}
+                onValueChange={(value) => {
+                  setSelectedDataType(value);
+                  // Auto-select KPI Block visualization for KPI Block (Multiple Metrics)
+                  if (value === 'kpi_block') {
+                    setSelectedGraphType('kpi_block');
+                  } else {
+                    setSelectedGraphType('');
+                  }
+                  // Reset custom title when data type changes
+                  if (!customTitle) {
+                    setCustomTitle('');
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choose data type..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {dataTypeOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Step 2: Select Graph Type - Hidden for KPI Block (Multiple Metrics) */}
@@ -416,22 +427,27 @@ const OCRDashboardBuilderV2 = () => {
                 2. Select Visualization
               </label>
               {selectedDataType ? (
-                <select 
-                  value={selectedGraphType}
-                  onChange={(e) => setSelectedGraphType(e.target.value)}
-                  className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Choose visualization...</option>
-                  {getAvailableGraphs()
-                    .sort((a, b) => graphTypeOptions[a].label.localeCompare(graphTypeOptions[b].label))
-                    .map(graphType => (
-                      <option key={graphType} value={graphType}>
-                        {graphTypeOptions[graphType].label}
-                      </option>
-                    ))}
-                </select>
+                <div className="px-0.5">
+                  <Select 
+                    value={selectedGraphType}
+                    onValueChange={(value) => setSelectedGraphType(value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Choose visualization..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getAvailableGraphs()
+                        .sort((a, b) => graphTypeOptions[a].label.localeCompare(graphTypeOptions[b].label))
+                        .map(graphType => (
+                          <SelectItem key={graphType} value={graphType}>
+                            {graphTypeOptions[graphType].label}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               ) : (
-                <div className="text-xs text-gray-500 italic border border-dashed border-gray-300 rounded-lg p-3 text-center">
+                <div className="text-xs text-gray-500 italic border border-dashed border-gray-300 rounded-lg p-3 text-center mx-0.5">
                   Select a data type first
                 </div>
               )}
@@ -444,14 +460,20 @@ const OCRDashboardBuilderV2 = () => {
               <label className="block text-xs font-medium text-gray-700 mb-1.5">
                 2. Number of Metrics
               </label>
-              <select 
-                value={kpiBlockCount}
-                onChange={(e) => setKpiBlockCount(Number(e.target.value))}
-                className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value={2}>2 Metrics</option>
-                <option value={4}>4 Metrics</option>
-              </select>
+              <div className="px-0.5">
+                <Select 
+                  value={kpiBlockCount.toString()}
+                  onValueChange={(value) => setKpiBlockCount(Number(value))}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2">2 Metrics</SelectItem>
+                    <SelectItem value="4">4 Metrics</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           )}
 
@@ -461,13 +483,14 @@ const OCRDashboardBuilderV2 = () => {
               <label className="block text-xs font-medium text-gray-700 mb-1.5">
                 3. Block Title (Optional)
               </label>
-              <input
-                type="text"
-                value={customTitle}
-                onChange={(e) => setCustomTitle(e.target.value)}
-                placeholder={dataTypeLabel || 'Enter custom title...'}
-                className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <div className="px-0.5">
+                <Input
+                  type="text"
+                  value={customTitle}
+                  onChange={(e) => setCustomTitle(e.target.value)}
+                  placeholder={dataTypeLabel || 'Enter custom title...'}
+                />
+              </div>
               <div className="text-xs text-gray-500 mt-1">
                 Leave empty to use default: "{dataTypeLabel}"
               </div>
@@ -606,16 +629,27 @@ const OCRDashboardBuilderV2 = () => {
           </div>
         );
       case 'scatter':
+        return (
+          <div className="h-full">
+            <ScatterChartComponent />
+          </div>
+        );
       case 'bubble':
+        return (
+          <div className="h-full">
+            <BubbleChartComponent />
+          </div>
+        );
       case 'polarArea':
+        return (
+          <div className="h-full">
+            <PolarChartComponent />
+          </div>
+        );
       case 'radar':
         return (
-          <div className="flex items-center justify-center h-full text-gray-400">
-            <div className="text-center">
-              <BarChart3 size={48} className="mx-auto mb-2" />
-              <div className="text-sm">{graphTypeOptions[block.graphType].label}</div>
-              <div className="text-xs mt-1">Chart Preview</div>
-            </div>
+          <div className="h-full">
+            <RadarChartComponent />
           </div>
         );
       default:
@@ -710,17 +744,23 @@ const OCRDashboardBuilderV2 = () => {
                     <span className="text-sm font-semibold text-gray-700">Row {rowIdx + 1}</span>
                     <div className="flex items-center gap-2">
                       <Columns size={16} className="text-gray-400" />
-                      <select 
-                        value={row.columns} 
-                        onChange={(e) => updateRowColumns(row.id, Number(e.target.value))}
-                        onClick={(e) => e.stopPropagation()}
-                        className="px-2 py-1 text-sm border border-gray-300 rounded cursor-pointer"
+                      <Select 
+                        value={row.columns.toString()} 
+                        onValueChange={(value) => updateRowColumns(row.id, Number(value))}
                       >
-                        <option value={1}>1 Column</option>
-                        <option value={2}>2 Columns</option>
-                        <option value={3}>3 Columns</option>
-                        <option value={4}>4 Columns</option>
-                      </select>
+                        <SelectTrigger 
+                          className="px-2 py-1 text-sm h-auto min-h-0 w-auto"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">1 Column</SelectItem>
+                          <SelectItem value="2">2 Columns</SelectItem>
+                          <SelectItem value="3">3 Columns</SelectItem>
+                          <SelectItem value="4">4 Columns</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <span className="text-xs text-gray-500">
                       {row.blocks.filter(b => b.configured).length}/{row.blocks.length} configured

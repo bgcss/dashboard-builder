@@ -19,6 +19,9 @@ import {
   Pie,
   Doughnut,
   PolarArea,
+  Bubble,
+  Scatter,
+  Radar,
 } from 'react-chartjs-2';
 import {
   useReactTable,
@@ -32,6 +35,16 @@ import {
   ColumnFiltersState,
 } from '@tanstack/react-table';
 import { ChevronUp, ChevronDown, Search, Filter } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from './components/ui/table';
+import { Input } from './components/ui/input';
+import { Button } from './components/ui/button';
 
 // Register Chart.js components
 ChartJS.register(
@@ -119,6 +132,304 @@ export const BarChartComponent: React.FC = () => {
   return <Bar data={data} options={options} />;
 };
 
+// Scatter Chart Component
+export const ScatterChartComponent: React.FC = () => {
+  const data = {
+    datasets: [
+      {
+        label: 'Processing Time vs Accuracy',
+        data: [
+          { x: 95, y: 1.2 },
+          { x: 88, y: 2.1 },
+          { x: 92, y: 1.8 },
+          { x: 85, y: 2.5 },
+          { x: 98, y: 0.9 },
+          { x: 90, y: 1.5 },
+          { x: 87, y: 2.2 },
+          { x: 94, y: 1.1 },
+          { x: 91, y: 1.7 },
+          { x: 89, y: 1.9 },
+        ],
+        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+        borderColor: 'rgba(59, 130, 246, 1)',
+        borderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+      },
+      {
+        label: 'Error Rate vs Response Time',
+        data: [
+          { x: 82, y: 3.1 },
+          { x: 78, y: 3.5 },
+          { x: 85, y: 2.8 },
+          { x: 80, y: 3.2 },
+          { x: 88, y: 2.4 },
+          { x: 83, y: 2.9 },
+          { x: 86, y: 2.6 },
+          { x: 84, y: 2.7 },
+        ],
+        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+        borderColor: 'rgba(16, 185, 129, 1)',
+        borderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+      },
+    ],
+  };
+
+  const options = {
+    ...commonOptions,
+    scales: {
+      x: {
+        type: 'linear' as const,
+        position: 'bottom' as const,
+        title: {
+          display: true,
+          text: 'Accuracy Rate (%)',
+          font: {
+            size: 12,
+          },
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          font: {
+            size: 10,
+          },
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Processing Time (seconds)',
+          font: {
+            size: 12,
+          },
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          font: {
+            size: 10,
+          },
+        },
+      },
+    },
+    plugins: {
+      ...commonOptions.plugins,
+      tooltip: {
+        ...commonOptions.plugins.tooltip,
+        callbacks: {
+          label: function(context: any) {
+            const point = context.parsed;
+            return `${context.dataset.label}: Accuracy: ${point.x}%, Time: ${point.y}s`;
+          },
+        },
+      },
+    },
+  };
+
+  return <Scatter data={data} options={options} />;
+};
+
+// Bubble Chart Component
+export const BubbleChartComponent: React.FC = () => {
+  const data = {
+    datasets: [
+      {
+        label: 'Document Processing Performance',
+        data: [
+          { x: 95, y: 1.2, r: 15 }, // Accuracy vs Processing Time, bubble size = volume
+          { x: 88, y: 2.1, r: 25 },
+          { x: 92, y: 1.8, r: 20 },
+          { x: 85, y: 2.5, r: 30 },
+          { x: 98, y: 0.9, r: 12 },
+          { x: 90, y: 1.5, r: 18 },
+          { x: 87, y: 2.2, r: 22 },
+          { x: 94, y: 1.1, r: 16 },
+        ],
+        backgroundColor: 'rgba(59, 130, 246, 0.6)',
+        borderColor: 'rgba(59, 130, 246, 1)',
+        borderWidth: 2,
+      },
+      {
+        label: 'Error Handling Performance',
+        data: [
+          { x: 82, y: 3.1, r: 14 },
+          { x: 78, y: 3.5, r: 19 },
+          { x: 85, y: 2.8, r: 17 },
+          { x: 80, y: 3.2, r: 21 },
+          { x: 88, y: 2.4, r: 13 },
+        ],
+        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+        borderColor: 'rgba(16, 185, 129, 1)',
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const options = {
+    ...commonOptions,
+    scales: {
+      x: {
+        type: 'linear' as const,
+        position: 'bottom' as const,
+        title: {
+          display: true,
+          text: 'Accuracy Rate (%)',
+          font: {
+            size: 12,
+          },
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          font: {
+            size: 10,
+          },
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Processing Time (seconds)',
+          font: {
+            size: 12,
+          },
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          font: {
+            size: 10,
+          },
+        },
+      },
+    },
+    plugins: {
+      ...commonOptions.plugins,
+      tooltip: {
+        ...commonOptions.plugins.tooltip,
+        callbacks: {
+          label: function(context: any) {
+            const point = context.parsed;
+            return `${context.dataset.label}: Accuracy: ${point.x}%, Time: ${point.y}s, Volume: ${context.raw.r}`;
+          },
+        },
+      },
+    },
+  };
+
+  return <Bubble data={data} options={options} />;
+};
+
+// Polar Chart Component
+export const PolarChartComponent: React.FC = () => {
+  const data = {
+    labels: ['Document Types', 'Processing Speed', 'Accuracy Rate', 'Error Handling', 'User Satisfaction'],
+    datasets: [
+      {
+        data: [85, 92, 78, 88, 95],
+        backgroundColor: [
+          'rgba(59, 130, 246, 0.8)',
+          'rgba(16, 185, 129, 0.8)',
+          'rgba(245, 158, 11, 0.8)',
+          'rgba(239, 68, 68, 0.8)',
+          'rgba(139, 92, 246, 0.8)',
+        ],
+        borderColor: [
+          'rgba(59, 130, 246, 1)',
+          'rgba(16, 185, 129, 1)',
+          'rgba(245, 158, 11, 1)',
+          'rgba(239, 68, 68, 1)',
+          'rgba(139, 92, 246, 1)',
+        ],
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const options = {
+    ...commonOptions,
+    scales: {
+      r: {
+        beginAtZero: true,
+        max: 100,
+        ticks: {
+          font: {
+            size: 10,
+          },
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+      },
+    },
+  };
+
+  return <PolarArea data={data} options={options} />;
+};
+
+// Radar Chart Component
+export const RadarChartComponent: React.FC = () => {
+  const data = {
+    labels: ['Processing Speed', 'Accuracy', 'Error Handling', 'User Experience', 'Scalability', 'Security'],
+    datasets: [
+      {
+        label: 'Current Performance',
+        data: [85, 92, 78, 88, 75, 90],
+        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+        borderColor: 'rgba(59, 130, 246, 1)',
+        borderWidth: 2,
+        pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+        pointBorderColor: 'white',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+      },
+      {
+        label: 'Target Performance',
+        data: [90, 95, 85, 92, 88, 95],
+        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+        borderColor: 'rgba(16, 185, 129, 1)',
+        borderWidth: 2,
+        pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+        pointBorderColor: 'white',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+      },
+    ],
+  };
+
+  const options = {
+    ...commonOptions,
+    scales: {
+      r: {
+        beginAtZero: true,
+        max: 100,
+        ticks: {
+          font: {
+            size: 10,
+          },
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        pointLabels: {
+          font: {
+            size: 11,
+          },
+        },
+      },
+    },
+  };
+
+  return <Radar data={data} options={options} />;
+};
+
 // Sample data for the data table
 interface DocumentData {
   id: string;
@@ -196,7 +507,7 @@ const sampleTableData: DocumentData[] = [
   }
 ];
 
-// Data Table Component
+// Data Table Component using shadcn/ui - Auto-sizing to content
 export const DataTableComponent: React.FC = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -208,14 +519,14 @@ export const DataTableComponent: React.FC = () => {
     columnHelper.accessor('id', {
       header: 'ID',
       cell: info => (
-        <span className="font-mono text-xs text-gray-600">{info.getValue()}</span>
+        <span className="font-mono text-xs text-muted-foreground">{info.getValue()}</span>
       ),
     }),
     columnHelper.accessor('documentName', {
       header: 'Document Name',
       cell: info => (
         <div className="max-w-[120px] truncate" title={info.getValue()}>
-          <span className="text-sm font-medium text-gray-900">{info.getValue()}</span>
+          <span className="text-sm font-medium">{info.getValue()}</span>
         </div>
       ),
     }),
@@ -249,16 +560,16 @@ export const DataTableComponent: React.FC = () => {
       cell: info => {
         const accuracy = info.getValue();
         return accuracy > 0 ? (
-          <span className="text-sm font-medium text-gray-900">{accuracy}%</span>
+          <span className="text-sm font-medium">{accuracy}%</span>
         ) : (
-          <span className="text-sm text-gray-400">-</span>
+          <span className="text-sm text-muted-foreground">-</span>
         );
       },
     }),
     columnHelper.accessor('processedDate', {
       header: 'Date',
       cell: info => (
-        <span className="text-sm text-gray-600">{info.getValue()}</span>
+        <span className="text-sm text-muted-foreground">{info.getValue()}</span>
       ),
     }),
     columnHelper.accessor('extractedFields', {
@@ -266,9 +577,9 @@ export const DataTableComponent: React.FC = () => {
       cell: info => {
         const fields = info.getValue();
         return fields > 0 ? (
-          <span className="text-sm font-medium text-gray-900">{fields}</span>
+          <span className="text-sm font-medium">{fields}</span>
         ) : (
-          <span className="text-sm text-gray-400">-</span>
+          <span className="text-sm text-muted-foreground">-</span>
         );
       },
     }),
@@ -297,88 +608,97 @@ export const DataTableComponent: React.FC = () => {
   });
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="w-full space-y-4">
       {/* Search Bar */}
-      <div className="mb-3">
-        <div className="relative">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            value={globalFilter ?? ''}
-            onChange={e => setGlobalFilter(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+      <div className="flex items-center space-x-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Input
             placeholder="Search documents..."
+            value={globalFilter ?? ''}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="pl-8"
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="flex-1 overflow-auto border border-gray-200 rounded-md">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50 sticky top-0">
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
                     key={header.id}
-                    className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    className="cursor-pointer select-none"
                     onClick={header.column.getToggleSortingHandler()}
                   >
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center space-x-2">
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.getIsSorted() && (
-                        <span className="text-gray-400">
+                        <span className="text-muted-foreground">
                           {header.column.getIsSorted() === 'desc' ? (
-                            <ChevronDown className="w-3 h-3" />
+                            <ChevronDown className="w-4 h-4" />
                           ) : (
-                            <ChevronUp className="w-3 h-3" />
+                            <ChevronUp className="w-4 h-4" />
                           )}
                         </span>
                       )}
                     </div>
-                  </th>
+                  </TableHead>
                 ))}
-              </tr>
+              </TableRow>
             ))}
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {table.getRowModel().rows.map(row => (
-              <tr key={row.id} className="hover:bg-gray-50">
-                {row.getVisibleCells().map(cell => (
-                  <td key={cell.id} className="px-2 py-2 whitespace-nowrap">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
 
       {/* Pagination */}
-      <div className="mt-2 flex items-center justify-between text-xs text-gray-600">
-        <div className="flex items-center gap-2">
-          <span>
-            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-          </span>
-          <span>
-            ({table.getFilteredRowModel().rows.length} total)
-          </span>
+      <div className="flex items-center justify-between space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()} 
+          ({table.getFilteredRowModel().rows.length} total)
         </div>
-        <div className="flex items-center gap-1">
-          <button
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-            className="px-2 py-1 border border-gray-300 rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
           >
             Previous
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
-            className="px-2 py-1 border border-gray-300 rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
           >
             Next
-          </button>
+          </Button>
         </div>
       </div>
     </div>

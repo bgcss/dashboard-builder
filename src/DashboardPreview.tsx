@@ -9,7 +9,11 @@ import {
   AreaChartComponent,
   GaugeChartComponent,
   HeatmapComponent,
-  DataTableComponent
+  DataTableComponent,
+  PolarChartComponent,
+  BubbleChartComponent,
+  ScatterChartComponent,
+  RadarChartComponent
 } from './ChartComponents';
 
 interface Block {
@@ -170,11 +174,33 @@ const DashboardPreview: React.FC<DashboardPreviewProps> = ({ dashboardRows }) =>
             <HeatmapComponent />
           </div>
         );
-      case 'table':
+      case 'polarArea':
         return (
           <div className="h-full">
-            <DataTableComponent />
+            <PolarChartComponent />
           </div>
+        );
+      case 'radar':
+        return (
+          <div className="h-full">
+            <RadarChartComponent />
+          </div>
+        );
+      case 'bubble':
+        return (
+          <div className="h-full">
+            <BubbleChartComponent />
+          </div>
+        );
+      case 'scatter':
+        return (
+          <div className="h-full">
+            <ScatterChartComponent />
+          </div>
+        );
+      case 'table':
+        return (
+          <DataTableComponent />
         );
       default:
         return (
@@ -301,7 +327,7 @@ const DashboardPreview: React.FC<DashboardPreviewProps> = ({ dashboardRows }) =>
                         )}
 
                         {/* Block Content */}
-                        <div className={block.graphType === 'kpi' ? '' : 'h-32 sm:h-40 lg:h-48'}>
+                        <div className={block.graphType === 'kpi' || block.graphType === 'table' ? '' : 'h-32 sm:h-40 lg:h-48'}>
                           {renderBlockContent(block)}
                         </div>
 
